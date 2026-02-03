@@ -10,12 +10,7 @@ This is a mod that attempts to accurately recreate the pause menu from Sonic Ori
 * Username Display showing the name of the character and (if you wish) the partner, with the ability to set your own custom one
 
 ## Screenshots
-<img src="images/1.png" height="224">
-<img src="images/2.png" height="224">
-<img src="images/3.png" height="224">
-<img src="images/4.png" height="224">
-<img src="images/5.png" height="224">
-<img src="images/6.png" height="224">
+<img src="images/1.png" height="224"> <img src="images/2.png" height="224"> <img src="images/3.png" height="224"> <img src="images/4.png" height="224"> <img src="images/5.png" height="224"> <img src="images/6.png" height="224">
 
 ## Modding 
 For modding, see [DOCUMENTATION.md](./DOCUMENTATION.md)
@@ -39,4 +34,4 @@ For modding, see [DOCUMENTATION.md](./DOCUMENTATION.md)
 * [KellyM](https://github.com/possiblyamagicmage) - Code that makes the selection colours glow, major assistance with character palette theme
 * [Nabbup](https://github.com/nabbup)
 * [Dynamic Lemons](https://github.com/DynamicLemons) - Assistance with Custom Username loading, ECF Support
-* [Nabbup](https://gamebanana.com/members/4837791)
+* [Leljader](https://gamebanana.com/members/4837791)
