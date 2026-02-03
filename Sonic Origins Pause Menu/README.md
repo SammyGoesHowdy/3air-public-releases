@@ -32,6 +32,6 @@ For modding, see [DOCUMENTATION.md](./DOCUMENTATION.md)
 ### Special Thanks
 * Team Galore Server & S3A.I.R. Community Server - Assistance
 * [KellyM](https://github.com/possiblyamagicmage) - Code that makes the selection colours glow, major assistance with character palette theme
-* [Nabbup](https://github.com/nabbup)
+* [Nabbup](https://github.com/nabbup) - Assistance with Themes
 * [Dynamic Lemons](https://github.com/DynamicLemons) - Assistance with Custom Username loading, ECF Support
-* [Leljader](https://gamebanana.com/members/4837791)
+* [Leljader](https://gamebanana.com/members/4837791) - Help with the fade effect on selections
