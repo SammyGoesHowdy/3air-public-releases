@@ -1,5 +1,5 @@
-**THIS MOD REQUIRES [SONIC 3 A.I.R. 25.02.15.0](https://github.com/Eukaryot/sonic3air/releases/tag/v25.02.15.0-test) OR NEWER, OLDER VERSIONS WILL NOT WORK.**
-This mod is an accurate recreation of the Sonic Origins pause menu for Sonic 3 A.I.R.
+**THIS MOD REQUIRES [SONIC 3 A.I.R. 25.02.15.0](https://github.com/Eukaryot/sonic3air/releases/tag/v25.02.15.0-test) OR NEWER, OLDER VERSIONS WILL NOT WORK.**<br>
+This is a mod that attempts to accurately recreate the pause menu from Sonic Origins in Sonic 3 A.I.R. With extra customisation and language options.
 
 ## List of features
 * Multi-language support (English, Español, Français, Português (Brazil))
