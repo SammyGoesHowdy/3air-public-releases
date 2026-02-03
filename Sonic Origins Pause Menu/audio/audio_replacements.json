@@ -1,0 +1,7 @@
+{
+	"origins_cursor_move":	{"File": "SFX_01_cursor_move.ogg", "Type": "Sound" },
+	"origins_ok":	{"File": "SFX_02_ok.ogg", "Type": "Sound" },
+	"origins_pause":	{"File": "SFX_05_pause.ogg", "Type": "Sound" },
+	"origins_cancel":	{"File": "SFX_03_cancel.ogg", "Type": "Sound" },
+	"origins_window":	{"File": "SFX_13_window_open.ogg", "Type": "Sound" },
+}

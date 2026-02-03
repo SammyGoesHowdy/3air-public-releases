@@ -1,0 +1,178 @@
+{
+	"Metadata":
+	{
+		"Name": "Sonic Origins Pause Menu",
+		"Author": "SammyGoesHowdy",
+		"Description": "Recreation of the pause menu from Sonic Origins, with a buttload of customization options.",
+		"ModVersion": "1.6",
+		"GameVersion": "25.02.15.0",
+		"UniqueID": "OriginsPauseMenu"
+		
+	},
+	"Settings":
+	{
+		"List":
+		[
+			{
+				"InternalName": "OriginsPause.PlayerBarName",
+				"DisplayName": "Username Display",
+				"Variable": "OriginsPause.PlayerBarName",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "Character",
+					"1": "Char & Partner",
+					"2": "Custom (username.txt)"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.Language",
+				"DisplayName": "Language",
+				"Variable": "OriginsPause.Language",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "English",
+					"1": "Espanol",
+					"2": "Francais",
+					"3": "Portuguese (Brasil)"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.InputStyle",
+				"DisplayName": "Button Icon",
+				"Variable": "OriginsPause.InputStyle",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "Keyboard",
+					"1": "PS4",
+					"2": "PS5",
+					"3": "Xbox",
+					"4": "Switch",
+					"5": "Genesis"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.ButtonIconStyle",
+				"DisplayName": "Button Style",
+				"Variable": "OriginsPause.ButtonIconStyle",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "Sonic 3 A.I.R.",
+					"1": "Custom (For mods)",
+					"2": "BetaNCourses",
+					"3": "Legacy (pre-1.4)",
+					"4": "Achievements Plus"
+
+				}
+			},
+			{
+				"InternalName": "OriginsPause.Theme",
+				"DisplayName": "Theme",
+				"Variable": "OriginsPause.Theme",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "Default",
+					"1": "Tails",
+					"2": "Knuckles",
+					"3": "Amy",
+					"4": "Failure",
+					"5": "Character Palette"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.FadeColor",
+				"DisplayName": "Fade Colour",
+				"Variable": "OriginsPause.FadeColor",
+				"DefaultValue": "0",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "White",
+					"1": "Black"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.ScreeniePrompt",
+				"DisplayName": "Screenshot Mode Prompt",
+				"Variable": "OriginsPause.ScreeniePrompt",
+				"DefaultValue": "1",
+				"Category": "Visuals",
+				"Options":
+				{
+					"0": "Show",
+					"1": "Hide"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.Dialogs",
+				"DisplayName": "Restart/Exit Dialogs",
+				"Variable": "OriginsPause.Dialogs",
+				"DefaultValue": "1",
+				"Category": "Features",
+				"Options":
+				{
+					"0": "Enable",
+					"1": "Disable"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.UseOptions",
+				"DisplayName": "3rd Pause Menu Option",
+				"Variable": "OriginsPause.UseOptions",
+				"DefaultValue": "2",
+				"Category": "Features",
+				"Options":
+				{
+					"0": "Hide",
+					"1": "Title Screen",
+					"2": "A.I.R. Options"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.RestrictBSOptions",
+				"DisplayName": "Blue Sphere Options",
+				"Variable": "OriginsPause.RestrictBSOptions",
+				"DefaultValue": "1",
+				"Category": "Features",
+				"Options":
+				{
+					"0": "No Restrictions",
+					"1": "Restrict"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.RestartButton",
+				"DisplayName": "Restart Button sends you...",
+				"Variable": "OriginsPause.RestartButton",
+				"DefaultValue": "1",
+				"Category": "Features",
+				"Options":
+				{
+					"0": "To start of act",
+					"1": "To last checkpoint"
+				}
+			},
+			{
+				"InternalName": "OriginsPause.ShowAPCoins",
+				"DisplayName": "Achievements Plus Coins",
+				"Variable": "OriginsPause.ShowAPCoins",
+				"DefaultValue": "1",
+				"Category": "Features",
+				"Options":
+				{
+					"0": "Show",
+					"1": "Hide"
+				}
+			}
+		]
+	}
+}

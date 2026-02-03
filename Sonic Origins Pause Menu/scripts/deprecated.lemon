@@ -1,0 +1,4 @@
+function string Origins.getCharacterPlayerName(u8 character)
+{
+	return ""
+}

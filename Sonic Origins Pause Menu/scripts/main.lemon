@@ -1,0 +1,621 @@
+include deprecated
+// I changed some function names, would rather not break shit.
+
+
+// Options
+global u8 OriginsPause.PlayerBarName
+global u8 OriginsPause.ShowAPCoins
+global u8 OriginsPause.UseOptions
+global u8 OriginsPause.InputStyle
+global u8 OriginsPause.Language
+global u8 OriginsPause.RestartButton
+global u8 OriginsPause.ScreeniePrompt
+global u8 OriginsPause.Theme
+global u8 OriginsPause.Dialogs
+global u8 OriginsPause.ButtonIconStyle
+global u8 OriginsPause.RestrictBSOptions
+global u8 OriginsPause.FadeColor
+
+// Numbers
+global u8 OriginsPause.oldSelectedEntry
+global u8 OriginsPause.lastSelectedEntry
+global float OriginsPause.TempFade
+global u8 OriginsPause.Digit = 0
+global u8 OriginsPause.DigitTimer = 0
+
+// Bools
+global bool OriginsPause.hasMainMenu = false
+global bool OriginsPause.ClosingMenu = false
+global bool OriginsPause.ArrowPart2 = false
+
+#define ORIGINS_PAUSE_ACTIVE
+
+function void OriginsPause.HandleRestartFX()
+{
+	GamePause.isDialogOpen = false
+	global.game.paused = false
+	if (OriginsPause.FadeColor == 1 && GamePause.selectedEntry != 1) 
+		FadeOutScreenBlocking()
+	else
+		FadeScreenToWhiteBlocking()
+}
+
+function void GamePause.Menu()
+{
+	// Script implementation of game pause
+	GamePause.hasRestart = !global.pause_disabled && (global.game_mode == 0x0c && global.stage_type == 0 && u8[0xffffb000 + 0x05] <= base_state.HURT) && !competition_mode.active
+	GamePause.hasOptions = OriginsPause.UseOptions == 0 ? false : OriginsPause.RestrictBSOptions == 0 ? true : (!bluespheres.minigame_mode && global.stage_type == 0)
+	OriginsPause.hasMainMenu = OriginsPause.RestrictBSOptions == 0 ? true : (global.stage_type == 0)
+
+	// Pause currently playing game music and sounds
+	Audio.pauseContext(AudioContext.CONTEXT_MUSIC)
+	Audio.pauseContext(AudioContext.CONTEXT_SOUND)
+	Audio.playAudio("origins_pause")
+	OriginsPause.Digit = 0
+	OriginsPause.DigitTimer = 0
+	OriginsPause.ArrowPart2 = false
+
+#if GAMEAPP
+	// Handle skippable cutscene
+	bool wasInSkippableCutscene = Game.isInSkippableCutscene()
+	Game.endSkippableCutscene()
+#endif
+	
+	constant float KEY_REPEAT_TIMEOUT = 0.4f
+	constant float KEY_REPEAT_DELAY   = 0.125f
+	float keyRepeatTimer = KEY_REPEAT_TIMEOUT
+	s8 lastPressedInput = -1
+
+	GamePause.visibility = 0.0f
+	GamePause.screenshotHint = 0.0f
+	GamePause.selectedEntry = 0
+	GamePause.dialogEntry = 0
+	OriginsPause.TempFade = 1.0f
+	GamePause.isDialogOpen = false
+	OriginsPause.ClosingMenu = false
+
+	float totalTime = 0.0f
+	bool screenshotModeActive = false
+
+	while (true)
+	{
+		
+		// Inner loop will be exited once the player selected an entry in the menu
+		while (true)
+		{
+			// During pause, use lifetime context 1 for everything rendered by the pause menu and afterwards (in "PostFrameUpdate" and by ghost sync)
+			//  -> This allows for selectively clearing these sprites, texts, etc. in each frame without touching the game's rendered content
+			Renderer.resetLifetimeContext(1)
+			Renderer.setLifetimeContext(1)
+
+			float deltaSeconds = 1.0f / 60.0f
+			totalTime += deltaSeconds
+
+			// Fade-in
+			if (GamePause.visibility < 1.0f && !screenshotModeActive)
+				GamePause.visibility = min(GamePause.visibility + deltaSeconds * 9.0f, 1.0f)
+
+			if (OriginsPause.TempFade < 1.0f && !screenshotModeActive)
+				OriginsPause.TempFade = min(OriginsPause.TempFade + 0.1f, 1.0f)
+			if (screenshotModeActive)
+			{
+				GamePause.visibility = max(GamePause.visibility - deltaSeconds * 8.0f, 0.0f)
+				Renderer.resetLifetimeContext(1)
+			}
+
+			GamePause.DrawMenu(screenshotModeActive ? 0.0f : totalTime)
+
+			enableCustomPlaneReset = false	// Maintain custom planes that were set before the pause
+			waitForNextFrame()
+			enableCustomPlaneReset = false	// ...also for the next frame (relevant in case of e.g. restart)
+
+			// Undo increase of global framecounter (see "VInt.InnerUpdate"), to avoid messing up animations that rely on it
+			--global.framecounter
+			
+			if (screenshotModeActive)
+			{
+				if ((Input.buttonPressed(0, BUTTON_A) || Input.buttonPressed(0, BUTTON_B) || Input.buttonPressed(0, BUTTON_X) || Input.buttonPressed(0, BUTTON_Y) || Input.buttonPressed(0, BUTTON_START) || Input.buttonPressed(0, BUTTON_BACK)) && !GamePause.isDialogOpen)
+				{
+					OriginsPause.ClosingMenu = false
+					screenshotModeActive = false
+				}
+			}
+			else
+			{
+				if (Input.buttonPressed(0, BUTTON_Y) && !GamePause.isDialogOpen)
+				{
+					OriginsPause.oldSelectedEntry = GamePause.selectedEntry
+					OriginsPause.ClosingMenu = true
+					screenshotModeActive = true
+				}
+				if (Input.buttonPressed(0, BUTTON_START) || Input.buttonPressed(0, BUTTON_A)) || ((GamePause.isDialogOpen && GamePause.selectedEntry == 1) && Input.buttonPressed(0,BUTTON_X)) && (!Input.buttonPressed(0, BUTTON_Y))
+				{
+					Audio.playAudio("origins_ok")
+					if (GamePause.selectedEntry == 1 || GamePause.selectedEntry == 3) && (OriginsPause.Dialogs == 0)
+						Audio.playAudio("origins_window")
+					break
+				}
+				if (GamePause.isDialogOpen)
+				{
+					// Return from dialog
+					if (Input.buttonPressed(0, BUTTON_B) || Input.buttonPressed(0, BUTTON_BACK))
+					{
+						Audio.playAudio("origins_cancel")
+						GamePause.isDialogOpen = false
+					}
+				}
+
+				else if (Input.buttonPressed(0, BUTTON_B))
+				{
+					Audio.playAudio("origins_cancel")
+					OriginsPause.oldSelectedEntry = GamePause.selectedEntry
+					GamePause.selectedEntry = 0 // We set this to zero because it'll still select the selected entry anyway.
+					break
+				}
+					// Handle key repeat
+				s8 currentInput = -1
+				{
+					if (Input.buttonPressed(BUTTON_UP))
+						currentInput = BUTTON_UP
+					else if (Input.buttonPressed(BUTTON_DOWN))
+						currentInput = BUTTON_DOWN
+					else if (lastPressedInput >= 0 && Input.buttonDown(lastPressedInput))
+						currentInput = lastPressedInput
+
+					lastPressedInput = currentInput
+
+					if (currentInput == -1)
+					{
+						// No input at all, so reset key repeat
+						keyRepeatTimer = KEY_REPEAT_TIMEOUT
+					}
+					else if (Input.buttonPressed(currentInput))
+					{
+						// Input pressed for the first frame now
+						keyRepeatTimer = KEY_REPEAT_TIMEOUT
+					}
+					else
+					{
+						// Input held down
+						keyRepeatTimer -= deltaSeconds
+						if (keyRepeatTimer <= 0.001f)
+							keyRepeatTimer = KEY_REPEAT_DELAY
+						else
+							currentInput = -1
+					}
+				}
+
+				s8 entryChange = (currentInput == BUTTON_UP) ? -1 : (currentInput == BUTTON_DOWN) ? 1 : 0
+				if (entryChange != 0)
+				{
+					if (!GamePause.isDialogOpen)
+					{
+						Audio.playAudio("origins_cursor_move")
+						OriginsPause.DigitTimer = 0
+						OriginsPause.Digit = 0
+						OriginsPause.ArrowPart2 = false
+						OriginsPause.lastSelectedEntry = GamePause.selectedEntry
+						OriginsPause.TempFade = 0
+						while (true)
+						{
+							GamePause.selectedEntry = (GamePause.selectedEntry + GamePause.NUM_ENTRIES + entryChange) % GamePause.NUM_ENTRIES
+							if (GamePause.IsValidEntry(GamePause.selectedEntry))
+								break
+						}
+						OriginsPause.oldSelectedEntry = GamePause.selectedEntry
+					}
+				}
+			}
+		}
+
+			// Evaluate which entry was chosen
+			if (GamePause.isDialogOpen)
+			{
+				// Player chose a dialog entry
+				if (Input.buttonPressed(0, BUTTON_START) || Input.buttonPressed(0, BUTTON_A))
+				{
+					if (GamePause.selectedEntry == 1)
+					{	
+						OriginsPause.HandleRestartFX()
+						restartLevel()
+						break
+					}
+					else if (GamePause.selectedEntry == 3)
+					{
+					#if GAMEAPP
+						OriginsPause.HandleRestartFX()
+						Game.returnToMainMenu()
+						yieldExecution()
+					#endif
+						break
+					}
+				}
+				if (Input.buttonPressed(0, BUTTON_X))
+				{
+					if (GamePause.selectedEntry == 1)
+					{
+						OriginsPause.HandleRestartFX()
+						restartAtCheckpoint()
+						break
+					}
+				}
+				else
+				{
+					// Close dialog again
+					GamePause.isDialogOpen = false
+				}
+			}
+			else
+			{
+				// Player chose a normal entry
+				if (GamePause.selectedEntry == 0)
+				{
+					// Leave this menu again and continue gameplay
+					break
+				}
+				else if (GamePause.selectedEntry == 1)
+				{
+					if (OriginsPause.Dialogs == 0)
+						GamePause.isDialogOpen = true
+					else
+					{
+						if (Game.isTimeAttack())
+						{
+							global.game.paused = false	// Done here already so the menu can fade out during the following screen fade
+							Audio.resumeContext(AudioContext.CONTEXT_MUSIC)
+							Audio.resumeContext(AudioContext.CONTEXT_SOUND)
+							restartTimeAttack()
+							break
+						}
+						else
+						{
+							OriginsPause.HandleRestartFX()
+							if OriginsPause.RestartButton == 1
+								restartAtCheckpoint()
+							else
+								restartLevel()
+							break
+						}
+					}
+				}
+				else if (GamePause.selectedEntry == 2)
+				{
+					if (OriginsPause.UseOptions == 2)
+					{
+						// Open in-game options
+						// TODO: How about a quick fade-out here as well?
+						#if GAMEAPP
+							Game.openOptionsMenu()
+							yieldExecution()
+						#endif
+					}
+					else
+					{
+						OriginsPause.HandleRestartFX()
+						global.game_mode = 0
+						break
+					}
+				}
+				else if (GamePause.selectedEntry == 3)
+				{
+					// First open the dialog menu for Exit Game
+					if (OriginsPause.Dialogs == 0)
+						GamePause.isDialogOpen = true
+					else
+					{
+					#if GAMEAPP
+						OriginsPause.HandleRestartFX()
+						Game.returnToMainMenu()
+						yieldExecution()
+					#endif
+					break
+					}
+				}
+			}
+	}
+	Renderer.resetLifetimeContext(1)
+
+	// Resume game audio
+	Audio.resumeContext(AudioContext.CONTEXT_MUSIC)
+	Audio.resumeContext(AudioContext.CONTEXT_SOUND)
+
+#if GAMEAPP
+	if (wasInSkippableCutscene)
+		Game.startSkippableCutscene()
+#endif
+}
+
+function void GamePause.UpdateFadeOut()
+{
+	// Fading already done?
+	if (GamePause.visibility <= 0.0f)
+		return
+
+	// Don't fade out during pause, only afterwards
+	if (global.game.paused)
+		return
+
+	Renderer.resetLifetimeContext(1)
+	Renderer.setLifetimeContext(1)
+
+	OriginsPause.ClosingMenu = true
+	OriginsPause.TempFade = 1.0f
+	// Fade-out
+	float deltaSeconds = 1.0f / 60.0f
+	GamePause.visibility = max(GamePause.visibility - deltaSeconds * 8.0f, 0.0f)
+
+	// Draw menu unless it just got invisible
+	if (GamePause.visibility > 0.0f)
+	{
+		GamePause.DrawMenu(0.0f)
+	}
+	else
+	{
+		Renderer.resetLifetimeContext(1)
+	}
+}
+
+function string OriginsPause.trimAmpersand(string name)
+{
+	// Trim everything after the '&' character (if it exists)
+	// For example, "Mighty & Ray" becomes just "Mighty"
+	// May cause issues if a character's name actually contains '&', but oh well.
+	// If you're looking into the code wondering why your character name looks weird, it's because of this. Simply hook into the OriginsPause.getCharacterPlayerName function below and manually add support for your character.
+	if (OriginsPause.PlayerBarName == 0)
+	{
+		u16 foundStringLen = name.find("&") 
+		if (foundStringLen > 1)
+			name = name.getSubString(0, foundStringLen-1)
+	}
+
+	return name
+}
+
+function string OriginsPause.getCharacterPlayerName(u8 character)
+{
+	string name = ""
+
+	if (OriginsPause.PlayerBarName != 2)
+	{
+		#if EXTRA_CHARACTERS_UNLIMITED
+		if (u8[0xffffe654] != 0x00)
+			name = ExtraChar.getCharacterName()
+		else
+		#endif
+		#if EXTRA_CHARACTER_FRAMEWORK_ACTIVE
+		if (global_ExChar_P1 != 0)
+			name = ECF_getCharDisplayName(global_ExChar_P1)
+		else
+		#endif
+		{
+			string actSelectName = ActSelect.GetCharacterCombinationName(character)
+			name = (actSelectName) ? actSelectName : "INTEGERGEORGE802"
+		}
+		name = OriginsPause.trimAmpersand(name)
+	}
+	else
+	{
+		//  ~ Lemons
+		u32 bytes = System.loadExternalRawData("origins_username", 0x800000)
+		for (u32 _offset = 0; _offset < bytes; ++_offset)
+			name = stringformat("%s%s", name, getStringFromCharacter(u8[_offset + 0x800000]))
+	}
+	return Origins.getCharacterPlayerName(character) != "" ? Origins.getCharacterPlayerName(character) : name
+}
+
+function string OriginsPause.GetAchievementsPlusCoins()
+{
+	return stringformat(u32[0x851300] < 100 ? "0%d" : "%d", u32[0x851300])
+}
+
+function bool GamePause.IsValidEntry(u8 selected)
+{
+	if (selected == 3 && !OriginsPause.hasMainMenu)
+		return false
+	else
+		return base.GamePause.IsValidEntry(selected)
+}
+
+function void OriginsPause.drawButtonPrompt(string key, s32 px, s32 py, u8 flags, u16 renderQueue, u32 tintColor, float scale, s32 width, s32 height, string text, u32 textColor)
+{
+	Renderer.drawRect(px, py-4, width+7, height, tintColor, renderQueue-0x02, false)
+	Renderer.drawSpriteTinted("origins_prompt", px+7+width, py-4, 0, flags, renderQueue-1, 0.0f, tintColor, scale)
+	Renderer.drawSprite(key, px, py, 0, flags, renderQueue-1, 0, tintColor)	
+	Renderer.drawText("smallfont_originspause", px+8, py-3, text, textColor, 1, 0, renderQueue, false)	
+}
+
+function string OriginsPause.getButtonIcon(string button)
+{
+	string buttonStyle = (OriginsPause.InputStyle == 0 ? "key" : OriginsPause.InputStyle == 1 ? "ps4" : OriginsPause.InputStyle == 2 ? "ps5" : OriginsPause.InputStyle == 3 ? "xbox" : OriginsPause.InputStyle == 4 ? "switch" : OriginsPause.InputStyle == 5 ? "gens" : "key")
+	string iconStyle = (OriginsPause.ButtonIconStyle == 2 ? "origins" : OriginsPause.ButtonIconStyle == 3 ? "legacy" : OriginsPause.ButtonIconStyle == 4 ? "ap" : "origins")
+
+	if OriginsPause.ButtonIconStyle > 1 
+		return stringformat("%s_input_icon_%s_%s",iconStyle,buttonStyle,button)
+	else
+		return stringformat("@input_icon_button_%s",button)
+}
+
+function string OriginsPause.GetAchievementsPlusCoins()
+{
+	return stringformat(u32[0x851300] < 100 ? "0%d" : "%d", u32[0x851300])
+}
+
+
+function void GamePause.DrawMenu(float time)
+{
+	// Constants - Main Button Texts
+	// These are used for the main menu entries
+	constant array<string> ENTRY_TEXTS = { "CONTINUE", "RESTART", "OPTIONS", "TITLE SCREEN", "MAIN MENU" }
+	constant array<string> ENTRY_TEXTS_SPANISH = { "CONTINUAR", "REINICIAR", "OPCIONES", "PANTALLA DE T£TULO", "MEN! PRINCIPAL" }
+	constant array<string> ENTRY_TEXTS_FRENCH = { "CONTINUER", "RECOMMENCER", "OPTIONS", "$CRAN TITRE", "MENU PRINCIPAL" }
+	constant array<string> ENTRY_TEXTS_PORT = { "CONTINUAR", "REINICIAR", "OP#/ES", "TELA PRINCIPAL", "MENU PRINCIPAL" }
+
+	// Constants - Dialog Texts
+	// These are used for the dialog box that appears when you select Restart or Exit to Menu
+	constant array<string> ENTRY_TEXTS_DIALOG = {"Pick restart area\\", "Act Start", "From Checkpoint", "Back", "Exit to menu?"}
+	constant array<string> ENTRY_TEXTS_SPANISH_DIALOG = {"Escoge en donde reiniciar\\", "Inicio del acto", "Punto de control", "Atras", "£Salir al men¬?"}
+	constant array<string> ENTRY_TEXTS_FRENCH_DIALOG = {"Choisi la zone de retour\\", "Du début de l'acte", "Du point de sauvegarde", "Annuler","Retourner au menu?"}
+	constant array<string> ENTRY_TEXTS_PORT_DIALOG = { "Selecione a ;rea para Reiniciar\\", "Inicio do Ato", "Do Checkpoint", "Voltar", "Voltar para o menu?"}
+
+	// Constants - Line Heights
+	// These are used for spacing the menu entries vertically
+	constant u16 LINE_HEIGHT = 19
+	constant u16 DIALOG_LINE_HEIGHT = 15
+
+	// Prompt text stuff
+	string yesPromptText = (OriginsPause.Language == 1 ? "Si" : OriginsPause.Language == 2 ? "Oui" : OriginsPause.Language == 3 ? "Sim" : "YES")
+	string noPromptText = (OriginsPause.Language == 2 ? "NON" : OriginsPause.Language == 3 ? "NAO" : "NO")
+	string screenshotPromptText = (OriginsPause.Language == 1 ? "Modo capt. de pantalla" : OriginsPause.Language == 2 ? "Mode capture d'ecran" : OriginsPause.Language == 3 ? "Modo de captura de tela" : "Screenshot Mode")
+	string okPromptText = (OriginsPause.Language == 1 ? "VALE" : "OK")
+	string closePromptText = (OriginsPause.Language == 1 ? "CERRAR MENU" : OriginsPause.Language == 2 ? "FERMER LE MENU" : OriginsPause.Language == 3 ? "FECHAR MENU" : "Close Menu")
+
+	u8 numEntries = 1 + u8(GamePause.hasRestart) + u8(GamePause.hasOptions) + u8(OriginsPause.hasMainMenu)
+	u16 rightAnchor = getScreenWidth() + Math.roundToInt((1.0f - GamePause.visibility)*40)
+	u16 rightAnchorBlackPart = getScreenWidth()-30 + Math.roundToInt((1.39f - GamePause.visibility)*75)
+	u16 leftAnchor = getScreenWidth() + Math.roundToInt((-1.0f - -GamePause.visibility) * 20)
+	u16 upAnchor = getScreenHeight() - 26  + Math.roundToInt((1.0f - GamePause.visibility) * 30)
+	u16 py = getScreenHeight() - numEntries * LINE_HEIGHT
+	s16 buttonPromptPx = 24
+	u32 blackfade = (70 - Math.roundToInt((1.0f - GamePause.visibility) * 70))
+	u32 transparency = (0xff - Math.roundToInt((1.0f - GamePause.visibility) * 255))
+
+	// Ensure that the game pause menu always renders onto the full screen, #contributed by nabbup / Ramona
+	Renderer.resetViewport(0xfeff)
+
+	u32 colourmain = (OriginsPause.Theme == 1 ? 0xFC900000 : OriginsPause.Theme == 2 ? 0xD8002400 : OriginsPause.Theme == 3 ? 0xFC6CFC00 : OriginsPause.Theme == 4 ? 0x64646400 : 0x003CB400)
+	u32 coloursecondary = (OriginsPause.Theme == 1 ? 0xFC900000 : OriginsPause.Theme == 2 ? 0x00900000 : OriginsPause.Theme == 3 ? 0x6C90FC00 : OriginsPause.Theme == 4 ? 0xAFAFAF00 : 0x0EB151700)
+	u32 colourarrow = (OriginsPause.Theme == 1 ? 0xfcfcfc00 : OriginsPause.Theme == 2 ? 0xFC900000 : OriginsPause.Theme == 3 ? 0xFC900000 : OriginsPause.Theme == 4 ? 0xffffff00 : 0xffe90c00)
+
+	if (OriginsPause.Theme == 5)
+	{
+		colourmain = unpackColor(u16[0x802180 + (0x40 * getMainCharacter()) + (((getMainCharacter() == CHARACTER_TAILS && u8[0xffffE654] == 0) ? 9 : 3) * 2)]) // Palette index offset like Kelly's code, but without the need for A0 shit
+		coloursecondary = unpackColor(u16[0x802180 + ((0x40 * getMainCharacter())) + (((!useKnucklesAndTails && (global.characters == 0x04 || global.characters == 0x05)) ? 0x07 : (useKnucklesAndTails || global.characters == 0x03) ? 5 : 6)* 2)]) // Palette index offset like Kelly's code, but without the need for A0 shit
+		colourarrow = unpackColor(u16[0x802180 + ((0x40 * getMainCharacter())) + (((!useKnucklesAndTails && (global.characters == 0x04 || global.characters == 0x05)) ? 0x09 : (useKnucklesAndTails || global.characters == 0x03) ? 7 : 8)* 2)]) // Palette index offset like Kelly's code, but without the need for A0 shit
+
+		colourmain = convertColors32(colourmain) // Swap from BGR
+		coloursecondary = convertColors32(coloursecondary) // Swap from BGR
+		colourarrow = convertColors32(colourarrow) // Swap from BGR
+	}
+	
+	// From here, just tint the sprite using the 'colourmain' variable.
+	Renderer.drawSpriteTinted("origins_pause_lower", (rightAnchorBlackPart)-230, getScreenHeight()-200, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff00, 0.0f, colourmain + transparency, 1.0f)
+	Renderer.drawSpriteTinted("origins_pause_lower_color", rightAnchor-230, getScreenHeight()-200, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff01, 0.0f, colourmain + transparency, 1.0f)
+	Renderer.drawRect(0, upAnchor, getScreenWidth(), 28, 0x000000ff, 0xff02, false)
+	Renderer.drawRect(rightAnchor-28, 0, 29, getScreenHeight(), 0x000000ff, 0xff00, false)
+
+	// Pause menu Text
+	Renderer.drawText("MontBlancBlack-origins-large", rightAnchor - (OriginsPause.Language == 3 ? 120 : OriginsPause.Language == 1 ? 98 :  94), py - 60, (OriginsPause.Language == 1 ? "PAUSA" : OriginsPause.Language == 3 ? "PAUSAR" : "PAUSE"), colourmain + transparency, 1, 0, 0xff03, false)
+	Renderer.drawText("MontBlancBlack-origins-large:outline(0xffffffff, 2, false):shadow(1,1,0,1.0f)", rightAnchor - (OriginsPause.Language == 3 ? 120 : OriginsPause.Language == 1 ? 98 :  94), py - 60, (OriginsPause.Language == 1 ? "PAUSA" : OriginsPause.Language == 3 ? "PAUSAR" : "PAUSE"), 0xffffff00 + transparency, 1, 0, 0xff02, false)
+
+	// Transparent black background
+	Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), blackfade, 0xff00, false)
+
+	// Player Name Drawing
+	Renderer.drawSpriteTinted("origins_playerbar1", getScreenWidth() - 150, getScreenHeight() - 17, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff03, 0.0f, colourmain + transparency, 1.0f)
+	Renderer.drawSprite("origins_playerbar2", getScreenWidth() - 111, getScreenHeight() - 17, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff03, 0, transparency)
+	Renderer.drawText("smallfont_originspause", getScreenWidth()-141, getScreenHeight() - 16, (OriginsPause.Language == 1 ? "JUGADOR" : OriginsPause.Language == 2 ? "JOUEUR" : OriginsPause.Language == 3 ? "JOGADOR" : "PLAYER"), 0xffffff00 + transparency, 1, 0, 0xffff, false)
+	Renderer.drawText("smallfont_originspause", getScreenWidth()-107	, getScreenHeight() - 16, OriginsPause.getCharacterPlayerName(global.characters), colourmain + transparency, 1, 0, 0xffff, false)
+
+	// Draw Button Prompts (can't believe this used to be 21 lines of code, now it's like, 8. its so funny)
+	for (u8 k = 0; k < ((OriginsPause.ScreeniePrompt == 0 && getScreenWidth() >= 340) ? 3 : 2) ; ++k)
+	{
+		string text = k == 0 ? okPromptText : k == 1 ? closePromptText : screenshotPromptText
+		string button = k == 0 ? "A" : k == 1 ? "B" : "Y"
+
+		OriginsPause.drawButtonPrompt(OriginsPause.getButtonIcon(button), buttonPromptPx, getScreenHeight()-13, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xffff, colourmain + transparency, 1.0f, Renderer.getTextWidth("smallfont_originspause",text)+2, 8, text,0xffffff00 + transparency)
+		buttonPromptPx += 24+(Renderer.getTextWidth("smallfont_originspause",text)-2)
+	}
+	
+	#if ACHIEVEMENTS_PLUS_ACTIVE
+		if (OriginsPause.ShowAPCoins == 0)
+		{
+			Renderer.drawSprite("originspause_coin", leftAnchor-(getScreenWidth()-13), getScreenHeight()-41, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff02, 0, transparency)
+			Renderer.drawSprite("origins_coin_arrow", leftAnchor-getScreenWidth(), getScreenHeight()-50, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff01, 0, transparency)
+			Renderer.drawText("oxyfont_tiny:shadow(1,1,0,1.0f)", leftAnchor-(getScreenWidth()-25), getScreenHeight()-48, "COINS", 0xF5F61F00 + transparency, 1, 1, 0xffff, false)
+			Renderer.drawText("smallfont:shadow(1,1,0,1.0f)", leftAnchor-(getScreenWidth()-26), getScreenHeight()-40, "x", 0xffffff00 + transparency, 1, 0, 0xffff, false)
+			Renderer.drawText("oxyfont_tiny:shadow(1,1,0,1.0f)", leftAnchor-(getScreenWidth()-34), getScreenHeight()-41, OriginsPause.GetAchievementsPlusCoins(), 0xffffff00 + transparency, 1, 0, 0xffff, false)
+		}
+	#endif
+
+	for (u8 k = 0; k < GamePause.NUM_ENTRIES; ++k)
+	{
+		float alpha = (Math.sin(time * 8.0f))
+		u8 firsttext = k == 2 ? (OriginsPause.UseOptions == 1 ? 3 : 2) : k == 3 ? 4 : k
+		u8 selectedEntry = (OriginsPause.ClosingMenu == true ? OriginsPause.oldSelectedEntry : GamePause.selectedEntry)
+		if (!GamePause.IsValidEntry(k))
+			continue
+
+		string key = "origins_pause_blackbar"
+		if (selectedEntry == k)
+		{
+			if (OriginsPause.DigitTimer < 0x02) 
+				OriginsPause.DigitTimer++
+			if ((OriginsPause.Digit < 0x04 && OriginsPause.DigitTimer == 0x02) && OriginsPause.ArrowPart2 == false)
+			{
+				OriginsPause.DigitTimer = 0
+				OriginsPause.ArrowPart2 = (OriginsPause.Digit >= 0x03) ? true : false
+				OriginsPause.Digit = (OriginsPause.ArrowPart2 == true ? OriginsPause.Digit - 1 : OriginsPause.Digit + 1)
+			}
+			
+			key = "origins_pause_blackbar_highlighted"
+			if (OriginsPause.ClosingMenu == false)
+				Renderer.drawSpriteTinted("origins_yellow_arrow", getScreenWidth() - (150 - OriginsPause.Digit), py - 34, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff02, 0.0f, colourarrow + u32(transparency), 1.0f)
+		}
+
+		u32 tint1 = coloursecondary + transparency
+		// split coloursecondary for a second...
+		u8 red = ((coloursecondary >> 24))
+		u8 green = ((coloursecondary >> 16))
+		u8 blue = ((coloursecondary >> 8))
+		
+		// get a lightened version...
+		red = min(u16(red+0x30), 0xff)
+		green = min(u16(green+0x30), 0xff)
+		blue = min(u16(blue+0x30), 0xff)
+		
+		// and then reassemble the colour
+		u32 lightenedcolour = (red << 24) + (green << 16) + (blue << 8)
+		u32 tint2 = lightenedcolour + transparency
+
+		string text = (OriginsPause.Language == 1 ? ENTRY_TEXTS_SPANISH[firsttext] : OriginsPause.Language == 2 ? ENTRY_TEXTS_FRENCH[firsttext] : OriginsPause.Language == 3 ? ENTRY_TEXTS_PORT[firsttext] : ENTRY_TEXTS[firsttext])
+
+		if (k == OriginsPause.lastSelectedEntry && OriginsPause.TempFade < 1.0f)
+		{
+			tint1 = coloursecondary + u32(Math.lerp(transparency, 0, OriginsPause.TempFade))
+			tint2 = lightenedcolour + u32(Math.lerp(transparency, 0, OriginsPause.TempFade))
+			
+			Renderer.drawSpriteTinted("origins_pause_blackbar_highlighted", getScreenWidth() - 150, py - 35, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff02, 0.0f, Color.lerp(tint1, tint2, alpha), 1.0f)
+			Renderer.drawSpriteTinted("origins_yellow_arrow", getScreenWidth() - 148, py - 34, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff02, 0.0f, colourarrow + u32(Math.lerp(transparency, 0, OriginsPause.TempFade)), 1.0f)
+		}
+
+		Renderer.drawSpriteTinted(key, getScreenWidth() - 150, py - 35, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff02, 0.0f, (selectedEntry == k) ? Color.lerp(tint1, tint2, alpha) : 0xffffff00 + transparency, 1.0f)
+		Renderer.drawText("MontBlancBlack-origins:shadow(1,1,0,1.0f)", getScreenWidth()-(selectedEntry == k ? 135 : 134), py-(selectedEntry == k ? 35 : 34), text, 0xffffff00 + transparency, 1, 0, 0xff03, false)
+
+		py += LINE_HEIGHT
+	}
+
+	if (GamePause.isDialogOpen)
+	{
+		u8 dialogText = (GamePause.selectedEntry == 3) ? 4 : (OriginsPause.RestartButton == 1 ? 0 : 0)
+		
+		s32 dialogWidth = OriginsPause.Language == 2 && GamePause.selectedEntry == 1 ? 224 : 158
+		s32 dialogPx = getScreenWidth()/2+(dialogWidth/2)-15
+		buttonPromptPx = dialogPx-dialogWidth-5
+		for (u8 k = 0; k < (GamePause.selectedEntry == 1 ? 3 : 2); ++k)
+		{
+			string text = (GamePause.selectedEntry == 3) ? (k == 0 ? yesPromptText : noPromptText) : ((OriginsPause.Language == 1 ? ENTRY_TEXTS_SPANISH_DIALOG[k+1] : OriginsPause.Language == 2 ? ENTRY_TEXTS_FRENCH_DIALOG[k+1] : OriginsPause.Language == 3 ? ENTRY_TEXTS_PORT_DIALOG[k+1] : ENTRY_TEXTS_DIALOG[k+1]))
+			string button = k == 0 ? "A" : (GamePause.selectedEntry == 1 && k == 1 ? "X" : "B")
+
+			OriginsPause.drawButtonPrompt(OriginsPause.getButtonIcon(button), buttonPromptPx, getScreenHeight()/2+15, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xffff, colourmain + transparency, 1.0f, Renderer.getTextWidth("smallfont_originspause",text)+2, 8, text,0xffffff00 + transparency)
+			buttonPromptPx += 25+(Renderer.getTextWidth("smallfont_originspause",text)-3)
+		}
+		SpriteHandle dialogMiddleSection = Renderer.addSpriteHandle("origins_dialog_middle", dialogPx, getScreenHeight()/2, 0xff09)
+
+        dialogMiddleSection.setFlags(SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT)
+		dialogMiddleSection.setScale(dialogWidth,1)
+		
+		Renderer.drawText("oxyfont_tiny_originspausefork", dialogPx-dialogWidth-5, getScreenHeight()/2-13, (OriginsPause.Language == 1 ? ENTRY_TEXTS_SPANISH_DIALOG[dialogText] : OriginsPause.Language == 2 ? ENTRY_TEXTS_FRENCH_DIALOG[dialogText] : OriginsPause.Language == 3 ? ENTRY_TEXTS_PORT_DIALOG[dialogText] : ENTRY_TEXTS_DIALOG[dialogText]), colourmain/2 + transparency, 1, 0, 0xff0b, false)
+		Renderer.drawSprite("origins_dialog_right", dialogPx+24, getScreenHeight()/2, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff09, 0, transparency)
+		Renderer.drawSprite("origins_dialog_left", dialogPx-(dialogWidth+8), getScreenHeight()/2, 0, SPRITE_FLAG_PRIO | SPRITE_FLAG_NO_GLOBAL_TINT, 0xff09, 0, transparency)
+	}
+}

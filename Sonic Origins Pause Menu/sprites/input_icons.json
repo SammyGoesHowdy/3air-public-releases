@@ -1,0 +1,94 @@
+{
+	// BetaNCourses
+	"origins_input_icon_key_A":	  { "File": "origins_input_icons.png", "Rect": "0,0,13,14", "Center": "7,7" },
+	"origins_input_icon_key_B":	  { "File": "origins_input_icons.png", "Rect": "14,0,13,14", "Center": "7,7" },
+	"origins_input_icon_key_X":	  { "File": "origins_input_icons.png", "Rect": "28,0,13,14", "Center": "7,7" },
+	"origins_input_icon_key_Y":	  { "File": "origins_input_icons.png", "Rect": "42,0,13,14", "Center": "7,7" },
+
+	"origins_input_icon_gens_A":	 { "File": "origins_input_icons.png", "Rect": "0,15,13,14", "Center": "7,7" },
+	"origins_input_icon_gens_B":	 { "File": "origins_input_icons.png", "Rect": "14,15,13,14", "Center": "7,7" },
+	"origins_input_icon_gens_X":	 { "File": "origins_input_icons.png", "Rect": "28,15,13,14", "Center": "7,7" },
+	"origins_input_icon_gens_Y":	 { "File": "origins_input_icons.png", "Rect": "42,15,13,14", "Center": "7,7" },
+
+	"origins_input_icon_xbox_A":	{ "File": "origins_input_icons.png", "Rect": "0,30,13,14", "Center": "7,7" },
+	"origins_input_icon_xbox_B":	{ "File": "origins_input_icons.png", "Rect": "14,30,13,14", "Center": "7,7" },
+	"origins_input_icon_xbox_X":	{ "File": "origins_input_icons.png", "Rect": "28,30,13,14", "Center": "7,7" },
+	"origins_input_icon_xbox_Y":	{ "File": "origins_input_icons.png", "Rect": "42,30,13,14", "Center": "7,7" },
+
+	"origins_input_icon_ps4_A":		{ "File": "origins_input_icons.png", "Rect": "0,45,13,14", "Center": "7,7" },
+	"origins_input_icon_ps4_B":		{ "File": "origins_input_icons.png", "Rect": "14,45,13,14", "Center": "7,7" },
+	"origins_input_icon_ps4_X":		{ "File": "origins_input_icons.png", "Rect": "28,45,13,14", "Center": "7,7" },
+	"origins_input_icon_ps4_Y":		{ "File": "origins_input_icons.png", "Rect": "42,45,13,14", "Center": "7,7" },
+
+	"origins_input_icon_ps5_A":		{ "File": "origins_input_icons.png", "Rect": "0,75,13,14", "Center": "7,7" },
+	"origins_input_icon_ps5_B":		{ "File": "origins_input_icons.png", "Rect": "14,75,13,14", "Center": "7,7" },
+	"origins_input_icon_ps5_X":		{ "File": "origins_input_icons.png", "Rect": "28,75,13,14", "Center": "7,7" },
+	"origins_input_icon_ps5_Y":		{ "File": "origins_input_icons.png", "Rect": "42,75,13,14", "Center": "7,7" },
+
+	"origins_input_icon_switch_A":		{ "File": "origins_input_icons.png", "Rect": "0,60,13,14", "Center": "7,7" },
+	"origins_input_icon_switch_B":		{ "File": "origins_input_icons.png", "Rect": "14,60,13,14", "Center": "7,7" },
+	"origins_input_icon_switch_X":		{ "File": "origins_input_icons.png", "Rect": "28,60,13,14", "Center": "7,7" },
+	"origins_input_icon_switch_Y":		{ "File": "origins_input_icons.png", "Rect": "42,60,13,14", "Center": "7,7" },
+		
+	// Legacy
+	"legacy_input_icon_key_A":	  { "File": "legacy_input_icons.png", "Rect": "0,0,13,14", "Center": "7,7" },
+	"legacy_input_icon_key_B":	  { "File": "legacy_input_icons.png", "Rect": "14,0,13,14", "Center": "7,7" },
+	"legacy_input_icon_key_X":	  { "File": "legacy_input_icons.png", "Rect": "28,0,13,14", "Center": "7,7" },
+	"legacy_input_icon_key_Y":	  { "File": "legacy_input_icons.png", "Rect": "42,0,13,14", "Center": "7,7" },
+
+	"legacy_input_icon_gens_A":	 { "File": "legacy_input_icons.png", "Rect": "0,15,13,14", "Center": "7,7" },
+	"legacy_input_icon_gens_B":	 { "File": "legacy_input_icons.png", "Rect": "14,15,13,14", "Center": "7,7" },
+	"legacy_input_icon_gens_X":	 { "File": "legacy_input_icons.png", "Rect": "28,15,13,14", "Center": "7,7" },
+	"legacy_input_icon_gens_Y":	 { "File": "legacy_input_icons.png", "Rect": "42,15,13,14", "Center": "7,7" },
+
+	"legacy_input_icon_xbox_A":	{ "File": "legacy_input_icons.png", "Rect": "0,30,13,14", "Center": "7,7" },
+	"legacy_input_icon_xbox_B":	{ "File": "legacy_input_icons.png", "Rect": "14,30,13,14", "Center": "7,7" },
+	"legacy_input_icon_xbox_X":	{ "File": "legacy_input_icons.png", "Rect": "28,30,13,14", "Center": "7,7" },
+	"legacy_input_icon_xbox_Y":	{ "File": "legacy_input_icons.png", "Rect": "42,30,13,14", "Center": "7,7" },
+
+	"legacy_input_icon_ps4_A":		{ "File": "legacy_input_icons.png", "Rect": "0,45,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps4_B":		{ "File": "legacy_input_icons.png", "Rect": "14,45,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps4_X":		{ "File": "legacy_input_icons.png", "Rect": "28,45,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps4_Y":		{ "File": "legacy_input_icons.png", "Rect": "42,45,13,14", "Center": "7,7" },
+
+	"legacy_input_icon_ps5_A":		{ "File": "legacy_input_icons.png", "Rect": "0,75,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps5_B":		{ "File": "legacy_input_icons.png", "Rect": "14,75,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps5_X":		{ "File": "legacy_input_icons.png", "Rect": "28,75,13,14", "Center": "7,7" },
+	"legacy_input_icon_ps5_Y":		{ "File": "legacy_input_icons.png", "Rect": "42,75,13,14", "Center": "7,7" },
+
+	"legacy_input_icon_switch_A":		{ "File": "legacy_input_icons.png", "Rect": "0,60,13,14", "Center": "7,7" },
+	"legacy_input_icon_switch_B":		{ "File": "legacy_input_icons.png", "Rect": "14,60,13,14", "Center": "7,7" },
+	"legacy_input_icon_switch_X":		{ "File": "legacy_input_icons.png", "Rect": "28,60,13,14", "Center": "7,7" },
+	"legacy_input_icon_switch_Y":		{ "File": "legacy_input_icons.png", "Rect": "42,60,13,14", "Center": "7,7" },
+
+	// Achievements Plus
+	"ap_input_icon_key_A":	  { "File": "ap_input_icons.png", "Rect": "0,0,13,14", "Center": "7,7" },
+	"ap_input_icon_key_B":	  { "File": "ap_input_icons.png", "Rect": "14,0,13,14", "Center": "7,7" },
+	"ap_input_icon_key_X":	  { "File": "ap_input_icons.png", "Rect": "28,0,13,14", "Center": "7,7" },
+	"ap_input_icon_key_Y":	  { "File": "ap_input_icons.png", "Rect": "42,0,13,14", "Center": "7,7" },
+
+	"ap_input_icon_gens_A":	 { "File": "ap_input_icons.png", "Rect": "0,15,13,14", "Center": "7,7" },
+	"ap_input_icon_gens_B":	 { "File": "ap_input_icons.png", "Rect": "14,15,13,14", "Center": "7,7" },
+	"ap_input_icon_gens_X":	 { "File": "ap_input_icons.png", "Rect": "28,15,13,14", "Center": "7,7" },
+	"ap_input_icon_gens_Y":	 { "File": "ap_input_icons.png", "Rect": "42,15,13,14", "Center": "7,7" },
+
+	"ap_input_icon_xbox_A":	{ "File": "ap_input_icons.png", "Rect": "0,30,13,14", "Center": "7,7" },
+	"ap_input_icon_xbox_B":	{ "File": "ap_input_icons.png", "Rect": "14,30,13,14", "Center": "7,7" },
+	"ap_input_icon_xbox_X":	{ "File": "ap_input_icons.png", "Rect": "28,30,13,14", "Center": "7,7" },
+	"ap_input_icon_xbox_Y":	{ "File": "ap_input_icons.png", "Rect": "42,30,13,14", "Center": "7,7" },
+
+	"ap_input_icon_ps4_A":		{ "File": "ap_input_icons.png", "Rect": "0,45,13,14", "Center": "7,7" },
+	"ap_input_icon_ps4_B":		{ "File": "ap_input_icons.png", "Rect": "14,45,13,14", "Center": "7,7" },
+	"ap_input_icon_ps4_X":		{ "File": "ap_input_icons.png", "Rect": "28,45,13,14", "Center": "7,7" },
+	"ap_input_icon_ps4_Y":		{ "File": "ap_input_icons.png", "Rect": "42,45,13,14", "Center": "7,7" },
+
+	"ap_input_icon_ps5_A":		{ "File": "ap_input_icons.png", "Rect": "0,75,13,14", "Center": "7,7" },
+	"ap_input_icon_ps5_B":		{ "File": "ap_input_icons.png", "Rect": "14,75,13,14", "Center": "7,7" },
+	"ap_input_icon_ps5_X":		{ "File": "ap_input_icons.png", "Rect": "28,75,13,14", "Center": "7,7" },
+	"ap_input_icon_ps5_Y":		{ "File": "ap_input_icons.png", "Rect": "42,75,13,14", "Center": "7,7" },
+
+	"ap_input_icon_switch_A":		{ "File": "ap_input_icons.png", "Rect": "0,60,13,14", "Center": "7,7" },
+	"ap_input_icon_switch_B":		{ "File": "ap_input_icons.png", "Rect": "14,60,13,14", "Center": "7,7" },
+	"ap_input_icon_switch_X":		{ "File": "ap_input_icons.png", "Rect": "28,60,13,14", "Center": "7,7" },
+	"ap_input_icon_switch_Y":		{ "File": "ap_input_icons.png", "Rect": "42,60,13,14", "Center": "7,7" }
+}

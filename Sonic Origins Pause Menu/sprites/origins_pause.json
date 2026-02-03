@@ -1,0 +1,15 @@
+{
+	"origins_pause_lower": { "File": "pause.png", "Rect": "0,0,250,250" },
+	"origins_pause_lower_color": { "File": "pause_thingymajig.png", "Rect": "0,0,250,250" },
+	"origins_pause_blackbar": { "File": "blackbar.png", "Rect": "0,0,155,15" },
+	"origins_pause_blackbar_highlighted": { "File": "blackbar.png", "Rect": "0,15,155,15" },
+	"origins_playerbar1": { "File": "playerBarPart1.png", "Rect": "0,0,42,7" },
+	"origins_playerbar2": { "File": "playerBar.png", "Rect": "0,0,114,7" },
+	"origins_prompt": { "File": "arrow.png", "Rect": "0,0,4,8" },
+	"origins_coin_arrow": { "File": "orange_arrow.png", "Rect": "0,0,92,18" },
+	"origins_yellow_arrow": { "File": "yellow_arrow.png", "Rect": "0,0,9,13" },
+	"origins_dialog_left": { "File": "dialog.png", "Rect": "0,0,16,52", "Center":"8,26"},
+	"origins_dialog_middle": { "File": "dialog.png", "Rect": "17,0,1,52", "Center":"1,26"},
+	"origins_dialog_right": { "File": "dialog.png", "Rect": "174,0,49,52", "Center":"24,26"},
+	"originspause_coin": { "File": "coin.png", "Rect": "0,0,16,16", "Center":"8,8" },
+}
