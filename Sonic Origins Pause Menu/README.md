@@ -10,12 +10,12 @@ This mod is an accurate recreation of the Sonic Origins pause menu for Sonic 3 A
 * Username Display showing the name of the character and (if you wish) the partner, with the ability to set your own custom one
 
 ## Screenshots
-<img src="images/1.PNG" height="224">
-<img src="images/2.PNG" height="224">
-<img src="images/3.PNG" height="224">
-<img src="images/4.PNG" height="224">
-<img src="images/5.PNG" height="224">
-<img src="images/6.PNG" height="224">
+<img src="images/1.png" height="224">
+<img src="images/2.png" height="224">
+<img src="images/3.png" height="224">
+<img src="images/4.png" height="224">
+<img src="images/5.png" height="224">
+<img src="images/6.png" height="224">
 
 ## Modding 
 For modding, see [DOCUMENTATION.md](./DOCUMENTATION.md)
