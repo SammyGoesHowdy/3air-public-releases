@@ -4,8 +4,10 @@
 
 1. In the mods folder, open username.txt in your preferred text editor. 
 2. Once opened, simply type whatever you want, then save the file.
-3. Once in game, set Username Display to Custom (username.txt). 
-4. Once you pause the game, your custom username should be displayed, like so:
+3. Once in game, set Username Display to Custom (username.txt):<br>
+<img src="images/screenshot_20251007_181201.png" height="64">
+4. Once you pause the game, your custom username should be displayed, like so:<br>
+<img src="images/screenshot_20251007_180935.png" height="64">
 
 ### Modding stuff :-P
 
